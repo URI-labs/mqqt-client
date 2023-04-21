@@ -1,16 +1,17 @@
-import http from "http";
-
-const PORT = process.env.PORT || 3000;
-
-export const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(
-    JSON.stringify({
-      data: "It Works!",
-    })
-  );
+import mqtt from 'mqtt';
+const client = mqtt.connect("mqtt://192.168.137.165:1883",
+{
+  clientId: "the-first-one",
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}/`);
+client.on("connect", function () {
+  console.log("Device Connected")
+  client.subscribe("testTopic", function (err) {
+    console.log("Subscribed to testTopic");
+  });
+});
+
+client.on("message", function (topic, message) {
+  // message is Buffer
+  console.log('Received Message:', topic, message.toString())
 });
